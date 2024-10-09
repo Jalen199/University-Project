@@ -1,0 +1,172 @@
+1. Data Structure Declaration
+We will use a simple array structure to store contacts. Each contact will have a name and a phone number.
+DECLARE PhoneBook : ARRAY[1:100] OF STRING
+DECLARE TotalContacts : INTEGER
+TotalContacts ← 0
+
+2. Insert Contact
+This procedure will allow inserting a new contact into the phonebook.
+PROCEDURE InsertContact(Name : STRING, PhoneNumber : STRING)
+    IF TotalContacts < LENGTH(PhoneBook) THEN
+        TotalContacts ← TotalContacts + 1
+        PhoneBook[TotalContacts] ← Name + "," + PhoneNumber
+        OUTPUT "Contact inserted successfully."
+    ELSE
+        OUTPUT "Phonebook is full. Cannot insert more contacts."
+    ENDIF
+END PROCEDURE
+
+3. Search Contact
+This function will perform a linear search to find a contact by name. It returns the index of the contact or -1 if not found.
+FUNCTION SearchContact(Name : STRING) RETURNS INTEGER
+    FOR i ← 1 TO TotalContacts DO
+        DECLARE Contact : STRING
+        Contact ← PhoneBook[i]
+        IF LEFT(Contact, FIND(Contact, ",") - 1) = Name THEN
+            RETURN i
+        ENDIF
+    NEXT i
+    RETURN -1  // Contact not found
+END FUNCTION
+
+4. Display All Contacts
+This procedure will output all the contacts in the phonebook.
+PROCEDURE DisplayContacts()
+    IF TotalContacts = 0 THEN
+        OUTPUT "Phonebook is empty."
+    ELSE
+        FOR i ← 1 TO TotalContacts DO
+            OUTPUT PhoneBook[i]
+        NEXT i
+    ENDIF
+END PROCEDURE
+
+5. Delete Contact
+This procedure deletes a contact from the phonebook based on the name provided.
+PROCEDURE DeleteContact(Name : STRING)
+    DECLARE Index : INTEGER
+    Index ← SearchContact(Name)
+    
+    IF Index = -1 THEN
+        OUTPUT "Contact not found."
+    ELSE
+        FOR i ← Index TO TotalContacts - 1 DO
+            PhoneBook[i] ← PhoneBook[i + 1]
+        NEXT i
+        TotalContacts ← TotalContacts - 1
+        OUTPUT "Contact deleted successfully."
+    ENDIF
+END PROCEDURE
+
+6. Update Contact
+This procedure updates the phone number of an existing contact.
+PROCEDURE UpdateContact(Name : STRING, NewPhoneNumber : STRING)
+    DECLARE Index : INTEGER
+    Index ← SearchContact(Name)
+    
+    IF Index = -1 THEN
+        OUTPUT "Contact not found."
+    ELSE
+        PhoneBook[Index] ← Name + "," + NewPhoneNumber
+        OUTPUT "Contact updated successfully."
+    ENDIF
+END PROCEDURE
+
+7. Sort Contacts (Optional)
+This procedure sorts the phonebook in alphabetical order based on contact names using a simple bubble sort.
+PROCEDURE SortContacts()
+    DECLARE Temp : STRING
+    FOR i ← 1 TO TotalContacts - 1 DO
+        FOR j ← i + 1 TO TotalContacts DO
+            IF PhoneBook[i] > PhoneBook[j] THEN
+                Temp ← PhoneBook[i]
+                PhoneBook[i] ← PhoneBook[j]
+                PhoneBook[j] ← Temp
+            ENDIF
+        NEXT j
+    NEXT i
+    OUTPUT "Contacts sorted successfully."
+END PROCEDURE
+
+8. Analyze Search Efficiency
+This procedure counts the number of steps taken to find a contact, which represents the efficiency of the linear search algorithm.
+PROCEDURE AnalyzeSearchEfficiency(Name : STRING)
+    DECLARE steps : INTEGER
+    steps ← 0
+       FOR i ← 1 TO TotalContacts DO
+        steps ← steps + 1
+        IF LEFT(PhoneBook[i], FIND(PhoneBook[i], ",") - 1) = Name THEN
+            OUTPUT "Contact found in ", steps, " steps."
+            RETURN
+        ENDIF
+    NEXT i
+    OUTPUT "Contact not found. Search took ", steps, " steps."
+END PROCEDURE
+
+9. Main Program
+This is the main program that prompts the user to choose an option and calls the relevant procedures or functions.
+PROCEDURE Main()
+    DECLARE choice : INTEGER
+    DECLARE name, phoneNumber : STRING
+    
+    REPEAT
+        OUTPUT "1. Insert Contact"
+        OUTPUT "2. Search Contact"
+        OUTPUT "3. Display All Contacts"
+        OUTPUT "4. Delete Contact"
+        OUTPUT "5. Update Contact"
+        OUTPUT "6. Sort Contacts"
+        OUTPUT "7. Analyze Search Efficiency"
+        OUTPUT "8. Exit"
+        OUTPUT "Enter your choice: "
+        INPUT choice
+        
+        IF choice = 1 THEN
+            OUTPUT "Enter name: "
+            INPUT name
+            OUTPUT "Enter phone number: "
+            INPUT phoneNumber
+            CALL InsertContact(name, phoneNumber)
+            
+        ELSE IF choice = 2 THEN
+            OUTPUT "Enter name to search: "
+            INPUT name
+            DECLARE index : INTEGER
+            index ← SearchContact(name)
+            IF index = -1 THEN
+                OUTPUT "Contact not found."
+            ELSE
+                OUTPUT "Contact found: ", PhoneBook[index]
+            ENDIF
+            
+        ELSE IF choice = 3 THEN
+            CALL DisplayContacts()
+            
+        ELSE IF choice = 4 THEN
+            OUTPUT "Enter name to delete: "
+            INPUT name
+            CALL DeleteContact(name)
+            
+        ELSE IF choice = 5 THEN
+            OUTPUT "Enter name to update: "
+            INPUT name
+            OUTPUT "Enter new phone number: "
+            INPUT phoneNumber
+            CALL UpdateContact(name, phoneNumber)
+            
+        ELSE IF choice = 6 THEN
+            CALL SortContacts()
+            
+        ELSE IF choice = 7 THEN
+            OUTPUT "Enter name to analyze search: "
+            INPUT name
+            CALL AnalyzeSearchEfficiency(name)
+            
+        ELSE IF choice = 8 THEN
+            OUTPUT "Exiting application."
+        ENDIF
+    UNTIL choice = 8
+END PROCEDURE
+
+// Start the program
+CALL Main()
